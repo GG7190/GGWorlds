@@ -12,9 +12,10 @@ import org.firstinspires.ftc.teamcode.GGParameters;
  * Created by User on 10/30/2017.
  */
 
-@TeleOp(name="WorldsTeleop",group="TeleOp")
-public class worldsTeleop extends LinearOpMode
+@TeleOp(name="AutonomousRecord",group="TeleOp")
+public class AutonomousRecord extends LinearOpMode
 {
+
 
     GGHardware robot = new GGHardware();
     private ElapsedTime  runtime= new ElapsedTime();
@@ -24,11 +25,13 @@ public class worldsTeleop extends LinearOpMode
     public void runOpMode()
     {
 
-
         GGParameters parameters = new GGParameters(this);
         robot.init(parameters);
         robot.resetEncoders();
         waitForStart();
+
+        double encoderAv =  0;
+
         while (opModeIsActive())
         {
 
@@ -57,12 +60,33 @@ public class worldsTeleop extends LinearOpMode
             robot.frontleft.setPower(Range.clip(robot.pwr + robot.x - robot.z, -1, 1));
             robot.backright.setPower(Range.clip(robot.pwr + robot.x + robot.z, -1, 1));
 
+            /////////////////////////
+            ///                   ///
+            ///  record encoder   ///
+            ///  and reset w/ b   ///
+            ///                   ///
+            /////////////////////////
+            /*encoderAv = (robot.frontleft.getCurrentPosition() + robot.frontright.getCurrentPosition()
+                    + robot.backleft.getCurrentPosition() + robot.backright.getCurrentPosition()) /4;
+            int newInches = robot.getEncoderPulses((int) encoderAv);
 
-            ////////////////////////
-            ///                  ///
-            ///   intake motors  ///
-            ///                  ///
-            ////////////////////////
+            telemetry.addData("encoder value: ", newInches);
+            telemetry.update();*/
+
+            if (gamepad1.b)
+            {
+                //newInches = 0;
+                robot.backleft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.backright.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.frontleft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.frontright.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }
+
+            /////////////////////////
+            ///                   ///
+            ///   intake motors   ///
+            ///                   ///
+            /////////////////////////
             if (gamepad2.left_bumper)
             {
                 robot.intakel.setPower(-0.75);
@@ -90,13 +114,13 @@ public class worldsTeleop extends LinearOpMode
             }
 
             //////////////////
-            /////        /////
-            /////flipper//////
-            /////        /////
+            ////         /////
+            //// flipper /////
+            ////         /////
             //////////////////
             if (gamepad2.y)
             {
-                robot.flipper.setPower(0.55);
+                robot.flipper.setPower(0.4);
             }
 
             else if (gamepad2.a)
@@ -107,7 +131,7 @@ public class worldsTeleop extends LinearOpMode
             else
             {
                 robot.flipper.setPower(0);
-                robot.relicLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                robot.relicLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             }
 
 
@@ -142,13 +166,25 @@ public class worldsTeleop extends LinearOpMode
             //relic wrist down
             if(gamepad2.dpad_down)
             {
-                robot.relicUpDown.setPosition(0.30);
+                robot.relicUpDown.setPosition(robot.RELICUPDOWN_MAX_RANGE);
             }
 
             //color arm middle
             if(gamepad2.dpad_up)
             {
-                robot.relicUpDown.setPosition(1);
+                robot.relicUpDown.setPosition(robot.RELICUPDOWN_MIN_RANGE);
+            }
+
+
+            ///////////////
+            ///         ///
+            ///  pivot  ///
+            ///         ///
+            //////////////
+            if(gamepad1.b)
+            {
+                //robot.pivot.setPosition(robot.PIVOT_MAX_RANGE);
+                //robot.spin.setPosition(robot.SPIN_MID_RANGE);
             }
 
             //////////////////
@@ -158,43 +194,11 @@ public class worldsTeleop extends LinearOpMode
             //////////////////
             if(gamepad1.dpad_left)
             {
-                robot.relicClaw.setPosition(0.0);
+                robot.relicClaw.setPosition(robot.RELICCLAW_MIN_RANGE);
             }
             if(gamepad1.dpad_right)
             {
-                robot.relicClaw.setPosition(0.75);
-            }
-
-            //////////////////
-            ///            ///
-            /// Jewel Arm  ///
-            ///            ///
-            //////////////////
-            if(gamepad1.y)
-            {
-                robot.jewelUpDown.setPosition(.4);
-                robot.jewelSide.setPosition(.35);
-                robot.jewelUpDown.setPosition(robot.JEWELUPDOWN_MAX_RANGE);
-            }
-            if(gamepad1.a)
-            {
-                robot.jewelUpDown.setPosition(robot.JEWELUPDOWN_MIN_RANGE);
-            }
-            if(gamepad1.b)
-            {
-                robot.jewelSide.setPosition(robot.JEWELSIDE_MAX_RANGE);
-            }
-            if(gamepad1.x)
-            {
-                robot.jewelSide.setPosition(robot.JEWELSIDE_MIN_RANGE);
-            }
-
-            if(gamepad1.right_bumper)
-            {
-                //robot.jewelUpDown.setPosition(.3);
-                robot.jewelSide.setPosition(.35);
-                sleep(1000);
-                robot.jewelUpDown.setPosition(robot.JEWELUPDOWN_MIN_RANGE);
+                robot.relicClaw.setPosition(robot.RELICCLAW_MAX_RANGE);
             }
 
         }
