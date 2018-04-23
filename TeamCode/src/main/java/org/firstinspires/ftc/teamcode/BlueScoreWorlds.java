@@ -227,6 +227,7 @@ public class BlueScoreWorlds extends LinearOpMode {
         return y;
     }
 
+    //yay
     int right = 29;
     int center = 22;
     int left = 10;
